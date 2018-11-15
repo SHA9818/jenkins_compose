@@ -1,0 +1,30 @@
+version: '3.1'
+services:
+    jenkins:
+        container_name: jenkins
+        ports:
+            - '8080:8080'
+            - '50000:50000'
+        image: jenkins-master
+        volumes:
+            - /Users/vineshkumar/jenkins_home:/var/jenkins_home
+    jenkins-slave:
+        container_name: jenkins-slave
+        restart: always
+        ports:
+            - 8081:8081
+        environment:
+            - 'JENKINS_URL=http://jenkins:8080'
+        image: jenkins-slave_tomcat1_sonarscanner
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /Users/vineshkumar/jenkins_slave_home:/home/jenkins
+            - /Users/vineshkumar/jenkins_slave_mavenhome:/usr/share/maven
+            - /Users/vineshkumar/.m2:/root/.m2
+        depends_on:
+            - jenkins
+    sonar:
+        image: sonarqube
+        ports:
+            - "9000:9000"
+            - "9092:9092"
